@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Astro Horoscope Booking</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:radial-gradient(circle at top,#1b0033,#000);
+  color:#fff;
+}
+.container{
+  max-width:420px;
+  margin:40px auto;
+  background:rgba(255,255,255,0.08);
+  padding:24px;
+  border-radius:16px;
+  box-shadow:0 0 20px rgba(255,215,0,0.3);
+}
+h1{text-align:center;color:#ffd700}
+label{display:block;margin-top:12px;font-size:14px}
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:4px;
+  border:none;
+  border-radius:8px;
+}
+button{
+  width:100%;
+  margin-top:20px;
+  padding:12px;
+  background:#ffd700;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+button:hover{background:#ffea00}
+
+#payment{
+  display:none;
+  text-align:center;
+  margin-top:20px;
+}
+.qr{
+  width:200px;
+  margin-top:10px;
+  border-radius:12px;
+}
+.successBtn{
+  background:#00c853;
+  color:#fff;
+}
+.orderBox{
+  background:rgba(255,215,0,.15);
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+  font-weight:bold;
+  color:#ffd700;
+}
+.footer{
+  text-align:center;
+  font-size:12px;
+  margin-top:16px;
+  opacity:.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>🔮 Horoscope Booking</h1>
+
+<form id="astroForm">
+<input type="hidden" name="booking_id" id="bookingIdField">
+
+<label>Full Name</label>
+<input name="name" required>
+
+<label>Date of Birth</label>
+<input type="date" name="dob" required>
+
+<label>Time of Birth</label>
+<input type="time" name="tob" required>
+
+<label>Place of Birth</label>
+<input name="pob" required>
+
+<label>Preferred Language</label>
+<select name="language">
+  <option>Telugu</option>
+  <option>English</option>
+  <option>Hindi</option>
+</select>
+
+<label>WhatsApp Number</label>
+<input name="whatsapp" placeholder="91XXXXXXXXXX" required>
+
+<button type="submit">Submit & Pay ₹499</button>
+</form>
+
+<div id="payment">
+  <div class="orderBox">
+    Booking ID: <span id="orderIdText"></span>
+  </div>
+
+  <h3>Scan to Pay ₹499</h3>
+  <img src="qr.png" class="qr">
+  <p>Please mention your Booking ID during payment.</p>
+
+  <button id="successBtn" class="successBtn" onclick="notifyAdmin()">
+  📩 Notify Admin – After Payment Done
+  </button>
+</div>
+
+<div class="footer">
+🌟 Trusted Astro Service
+</div>
+</div>
+
+<script>
+const form = document.getElementById("astroForm");
+
+/* Generate unique Booking ID */
+function generateBookingId(){
+  const d = new Date();
+  const datePart =
+    d.getFullYear().toString() +
+    String(d.getMonth()+1).padStart(2,'0') +
+    String(d.getDate()).padStart(2,'0');
+  const rand = Math.floor(1000 + Math.random()*9000);
+  return `ASTRO-${datePart}-${rand}`;
+}
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const bookingId = generateBookingId();
+  document.getElementById("bookingIdField").value = bookingId;
+  document.getElementById("orderIdText").innerText = bookingId;
+
+  const data = new FormData(form);
+
+  fetch("https://formspree.io/f/xjggvvrv", {
+    method: "POST",
+    body: data,
+    headers: { "Accept": "application/json" }
+  }).then(res => {
+    if(res.ok){
+      showPayment();
+      form.reset();
+    } else {
+      alert("Submission failed. Please try again.");
+    }
+  });
+});
+
+function showPayment(){
+  document.getElementById("payment").style.display = "block";
+}
+
+function notifyAdmin(){
+  const bookingId = document.getElementById("orderIdText").innerText;
+
+  const msg =
+`Payment Done – Astro Booking
+Booking ID: ${bookingId}
+
+Please verify the payment.`;
+
+  // 🔔 WhatsApp Notification (Admin)
+  window.open(
+    "https://wa.me/918978584251?text=" + encodeURIComponent(msg),
+    "_blank"
+  );
+
+  const btn = document.getElementById("successBtn");
+  btn.innerText = "✔ Admin Notified";
+  btn.disabled = true;
+  btn.style.background = "#888";
+
+  alert("Thank you!\nAdmin has been notified.\nYour booking will be processed shortly.");
+}
+
+</script>
+
+</body>
+</html>
