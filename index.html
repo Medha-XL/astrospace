@@ -142,6 +142,10 @@ function generateBookingId(){
 form.addEventListener("submit", function(e){
   e.preventDefault();
 
+  const submitBtn = form.querySelector("button[type='submit']");
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Processing...";
+
   const bookingId = generateBookingId();
   document.getElementById("bookingIdField").value = bookingId;
   document.getElementById("orderIdText").innerText = bookingId;
@@ -155,7 +159,6 @@ form.addEventListener("submit", function(e){
   }).then(res => {
     if(res.ok){
       showPayment();
-      form.reset();
     } else {
       alert("Submission failed. Please try again.");
     }
@@ -172,7 +175,6 @@ function showPayment(){
     block: "start"
   });
 }
-
 
 function notifyAdmin(){
   const bookingId = document.getElementById("orderIdText").innerText;
@@ -201,4 +203,3 @@ Please verify the payment.`;
 
 </body>
 </html>
-
