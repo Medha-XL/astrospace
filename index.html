@@ -163,8 +163,16 @@ form.addEventListener("submit", function(e){
 });
 
 function showPayment(){
-  document.getElementById("payment").style.display = "block";
+  const paymentSection = document.getElementById("payment");
+  paymentSection.style.display = "block";
+
+  // 🔽 Smooth auto-scroll to QR code
+  paymentSection.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
+
 
 function notifyAdmin(){
   const bookingId = document.getElementById("orderIdText").innerText;
@@ -193,3 +201,4 @@ Please verify the payment.`;
 
 </body>
 </html>
+
